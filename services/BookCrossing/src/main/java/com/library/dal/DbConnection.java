@@ -23,7 +23,8 @@ public class DbConnection {
     public DbConnection() {
         try {
             Class.forName("com.mysql.jdbc.Driver");
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/book_crossing", "dev", "h9tbTzx6U2Ne");
+            //conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/book_crossing", "dev", "h9tbTzx6U2Ne");
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/book_crossing", "root", "admin");
             conn.setAutoCommit(true);
         } catch (Exception ex) {
             Logger.getLogger(DbConnection.class.getName()).log(Level.SEVERE, null, ex);
