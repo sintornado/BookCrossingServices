@@ -44,6 +44,22 @@ public class BookResource {
         return response;
     }
 
+    @GET
+    @Path("/author/{author}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getBookByAuthor(@PathParam("author") String author) {
+
+        BookRepository br = new BookRepository();
+
+        ArrayList<Book> books = br.getBooksByAuthor(author, conn);
+
+        Response response = Response.status(Response.Status.OK)
+                .entity(books)
+                .header("Access-Control-Allow-Origin", "*").build();
+
+        return response;
+    }
+
     @POST
     @Path("/")
     public Response insertBook(Book book) {

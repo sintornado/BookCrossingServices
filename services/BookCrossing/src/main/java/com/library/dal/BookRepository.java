@@ -20,28 +20,19 @@ import java.util.logging.Logger;
 public class BookRepository {
 
     private final String SELECT_BOOK_BY_TITLE = "SELECT * FROM books WHERE title = ?";
+    private final String SELECT_BOOK_BY_AUTHOR = "SELECT * FROM books WHERE author = ?";
     private final String INSERT_INTO = "INSERT books (title, author, genre) VALUES (?, ?, ?)";
     private final String SELECT_BOOK_BY_ID = "SELECT * FROM books WHERE id = ?";
 
     public ArrayList<Book> getBooksByTitle(String title, DbConnection conn) {
 
-        ArrayList<Book> books = new ArrayList<>();
+        return getBooksByCriteria(title, SELECT_BOOK_BY_TITLE, conn);
 
-        try {
-            PreparedStatement ps = conn.getPreparedStatement(SELECT_BOOK_BY_TITLE);
+    }
 
-            ps.setString(1, title);
+    public ArrayList<Book> getBooksByAuthor(String author, DbConnection conn) {
 
-            ResultSet rs = ps.executeQuery();
-
-            while (rs.next()) {
-                books.add(getBookFromRs(rs));
-            }
-
-        } catch (SQLException ex) {
-            Logger.getLogger(BookRepository.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return books;
+        return getBooksByCriteria(author, SELECT_BOOK_BY_AUTHOR, conn);
 
     }
 
@@ -83,6 +74,27 @@ public class BookRepository {
         }
         return OperationResult.SUCCESS;
 
+    }
+
+    private ArrayList<Book> getBooksByCriteria(String criteria, String query, DbConnection conn) {
+
+        ArrayList<Book> books = new ArrayList<>();
+
+        try {
+            PreparedStatement ps = conn.getPreparedStatement(query);
+
+            ps.setString(1, criteria);
+
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                books.add(getBookFromRs(rs));
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(BookRepository.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return books;
     }
 
     private Book getBookFromRs(ResultSet rs) {
