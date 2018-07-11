@@ -11,6 +11,8 @@ import com.library.dal.OperationResult;
 import com.library.dto.Book;
 import java.util.ArrayList;
 import javax.ws.rs.GET;
+import static javax.ws.rs.HttpMethod.OPTIONS;
+import javax.ws.rs.OPTIONS;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -27,6 +29,22 @@ public class BookResource {
 
     private final DbConnection conn = new DbConnection();
     private final BookRepository repo = new BookRepository();
+
+    @GET
+    @Path("/all")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getAllBooks() {
+
+        BookRepository br = new BookRepository();
+
+        ArrayList<Book> books = br.getAllBooks(conn);
+
+        Response response = Response.status(Response.Status.OK)
+                .entity(books)
+                .header("Access-Control-Allow-Origin", "*").build();
+
+        return response;
+    }
 
     @GET
     @Path("/title/{title}")
@@ -77,6 +95,17 @@ public class BookResource {
 
     }
 
+    @OPTIONS
+    @Path("/")
+    public Response geOptions() {
+
+        return Response.status(Response.Status.OK)
+                .header("Allow", "POST,OPTIONS")
+                .header("Access-Control-Allow-Headers", "Content-Type, Authorization")
+                .header("Access-Control-Allow-Origin", "*").build();
+
+    }
+
     @GET
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -91,3 +120,13 @@ public class BookResource {
     }
 
 }
+//
+// BookRepository br = new BookRepository();
+//
+//        ArrayList<Book> books = br.getAllBooks(conn);
+//
+//        Response response = Response.status(Response.Status.OK)
+//                .entity(books)
+//                .header("Access-Control-Allow-Origin", "*").build();
+//
+//        return response;

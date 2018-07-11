@@ -7,6 +7,7 @@ import com.library.dto.User;
 import java.util.ArrayList;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.OPTIONS;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -23,8 +24,8 @@ import org.glassfish.grizzly.http.HttpContext;
 public class UserResource {
 
     private static ArrayList<User> listUsers = new ArrayList<>();
-    private UserRepository userRepo;
-    private DbConnection dbConn;
+    private UserRepository userRepo = new UserRepository();
+    private DbConnection dbConn = new DbConnection();
 
     public UserResource() {
         dbConn = new DbConnection();
@@ -56,15 +57,59 @@ public class UserResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public User update(User user) {
+    public Response insertUser(User user) {
 
         OperationResult result = userRepo.insertUser(user, dbConn);
 
         if (result == OperationResult.SUCCESS) {
-            return user;
+            return Response.status(Response.Status.CREATED)
+                    .entity(user)
+                    .header("Allow", "POST,OPTIONS")
+                    .header("Access-Control-Allow-Headers", "Content-Type, Authorization")
+                    .header("Access-Control-Allow-Origin", "*").build();
         } else {
-            return null;
+            return Response.status(Response.Status.fromStatusCode(500))
+                    .header("Access-Control-Allow-Origin", "*")
+                    .build();
 
         }
     }
+
+    @OPTIONS
+//    @Path("/")
+    public Response geOptions() {
+
+        return Response.status(Response.Status.OK)
+                .header("Allow", "POST,OPTIONS")
+                .header("Access-Control-Allow-Origin", "*")
+                .header("Access-Control-Allow-Headers", "Content-Type, Authorization")
+                .build();
+
+    }
+
 }
+//if (result == OperationResult.SUCCESS) {
+//            return user;
+//        } else {
+//            return null;
+//
+//        }
+
+//@POST
+//    @Consumes(MediaType.APPLICATION_JSON)
+//    @Produces(MediaType.APPLICATION_JSON)
+//    public User update(User user) {
+//
+//        OperationResult result = userRepo.insertUser(user, dbConn);
+//
+//        if (result == OperationResult.SUCCESS) {
+//            return Response.status(Response.Status.CREATED)
+//                    .entity(user)
+//                    .header("Access-Control-Allow-Origin", "*").build();
+//        } else {
+//            return Response.status(Response.Status.fromStatusCode(500))
+//                    .header("Access-Control-Allow-Origin", "*")
+//                    .build();
+//
+//        }
+//    }

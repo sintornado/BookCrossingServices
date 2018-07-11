@@ -16,12 +16,12 @@ import javax.ws.rs.core.MediaType;
  */
 @Path("myresource")
 public class MyResource {
-    
+
     @GET
-    @Produces(MediaType.TEXT_PLAIN)
-    public String respond(){
+    @Produces(MediaType.APPLICATION_JSON)
+    public String respond() {
         return "My resource response";
-        
+
     }
-    
+
 }

@@ -19,10 +19,31 @@ import java.util.logging.Logger;
  */
 public class BookRepository {
 
+    private final String SELECT_ALL_BOOKS = "SELECT * FROM books";
     private final String SELECT_BOOK_BY_TITLE = "SELECT * FROM books WHERE title = ?";
     private final String SELECT_BOOK_BY_AUTHOR = "SELECT * FROM books WHERE author = ?";
     private final String INSERT_INTO = "INSERT books (title, author, genre) VALUES (?, ?, ?)";
     private final String SELECT_BOOK_BY_ID = "SELECT * FROM books WHERE id = ?";
+
+    public ArrayList<Book> getAllBooks(DbConnection conn) {
+
+        ArrayList<Book> books = new ArrayList<>();
+
+        try {
+            PreparedStatement ps = conn.getPreparedStatement(SELECT_ALL_BOOKS);
+
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                books.add(getBookFromRs(rs));
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(BookRepository.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return books;
+
+    }
 
     public ArrayList<Book> getBooksByTitle(String title, DbConnection conn) {
 
@@ -97,6 +118,15 @@ public class BookRepository {
         return books;
     }
 
+//    private ArrayList<Book> getAllBooksFromDb(String query, DbConnection conn) {
+//        ArrayList<Book> books = new ArrayList<>();
+//        
+//        try {
+//            PreparedStatement ps = conn.getPreparedStatement(query);
+//            
+//            ResultSet rs = ps.executeQuery();
+//        }
+//    }
     private Book getBookFromRs(ResultSet rs) {
 
         Book book = null;
