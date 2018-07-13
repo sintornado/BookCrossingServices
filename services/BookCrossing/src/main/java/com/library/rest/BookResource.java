@@ -9,6 +9,7 @@ import com.library.dal.BookRepository;
 import com.library.dal.DbConnection;
 import com.library.dal.OperationResult;
 import com.library.dto.Book;
+import com.library.dto.SharedBook;
 import java.util.ArrayList;
 import javax.ws.rs.GET;
 import static javax.ws.rs.HttpMethod.OPTIONS;
@@ -69,7 +70,7 @@ public class BookResource {
 
         BookRepository br = new BookRepository();
 
-        ArrayList<Book> books = br.getBooksByAuthor(author, conn);
+        ArrayList<Book> books = br.getBooksByTitle(author, conn);
 
         Response response = Response.status(Response.Status.OK)
                 .entity(books)
@@ -79,9 +80,9 @@ public class BookResource {
     }
 
     @POST
-    @Path("/")
-    public Response insertBook(Book book) {
-        OperationResult result = repo.insertBook(book, conn);
+    @Path("/user/{userId}")
+    public Response insertBook(Book book, @PathParam("userId") Long userId) {
+        OperationResult result = repo.insertSharedBook(book, userId, conn);
 
         if (result == OperationResult.SUCCESS) {
             return Response.status(Response.Status.CREATED)
@@ -104,6 +105,22 @@ public class BookResource {
                 .header("Access-Control-Allow-Headers", "Content-Type, Authorization")
                 .header("Access-Control-Allow-Origin", "*").build();
 
+    }
+
+    @GET
+    @Path("/user/{userId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getBooksByUserId(@PathParam("userId") Long userId) {
+
+        BookRepository br = new BookRepository();
+
+        ArrayList<SharedBook> books = br.getBooksByUserId(userId, conn);
+
+        Response response = Response.status(Response.Status.OK)
+                .entity(books)
+                .header("Access-Control-Allow-Origin", "*").build();
+
+        return response;
     }
 
     @GET
