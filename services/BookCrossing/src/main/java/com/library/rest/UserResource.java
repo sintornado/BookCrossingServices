@@ -24,8 +24,8 @@ import org.glassfish.grizzly.http.HttpContext;
 public class UserResource {
 
     private static ArrayList<User> listUsers = new ArrayList<>();
-    private UserRepository userRepo = new UserRepository();
-    private DbConnection dbConn = new DbConnection();
+    private UserRepository userRepo;
+    private DbConnection dbConn;
 
     public UserResource() {
         dbConn = new DbConnection();

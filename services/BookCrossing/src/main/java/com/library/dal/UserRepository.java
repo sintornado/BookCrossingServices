@@ -16,7 +16,7 @@ import java.util.logging.Logger;
  *
  * @author IuraPC
  */
-public class UserRepository {
+public class UserRepository implements IUserRepository {
 
     private final String SELECT_USER_BY_ID = "SELECT * FROM users WHERE id= ?";
     private final String SELECT_USER_BY_EMAIL = "SELECT * FROM users WHERE email= ?";
