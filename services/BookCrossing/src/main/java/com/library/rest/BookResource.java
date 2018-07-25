@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.library.rest;
 
 import com.library.dal.BookRepository;
@@ -11,6 +6,7 @@ import com.library.dal.OperationResult;
 import com.library.dto.Book;
 import com.library.dto.SharedBook;
 import java.util.ArrayList;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import static javax.ws.rs.HttpMethod.OPTIONS;
 import javax.ws.rs.OPTIONS;
@@ -31,22 +27,21 @@ public class BookResource {
     private final DbConnection conn = new DbConnection();
     private final BookRepository repo = new BookRepository();
 
-    @GET
-    @Path("/all")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getAllBooks() {
-
-        BookRepository br = new BookRepository();
-
-        ArrayList<Book> books = br.getAllBooks(conn);
-
-        Response response = Response.status(Response.Status.OK)
-                .entity(books)
-                .header("Access-Control-Allow-Origin", "*").build();
-
-        return response;
-    }
-
+//    @GET
+//    @Path("/all")
+//    @Produces(MediaType.APPLICATION_JSON)
+//    public Response getAllBooks() {
+//
+//        BookRepository br = new BookRepository();
+//
+//        ArrayList<Book> books = br.getAllBooks(conn);
+//
+//        Response response = Response.status(Response.Status.OK)
+//                .entity(books)
+//                .header("Access-Control-Allow-Origin", "*").build();
+//
+//        return response;
+//    }
     @GET
     @Path("/title/{title}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -81,6 +76,8 @@ public class BookResource {
 
     @POST
     @Path("/user/{userId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
     public Response insertBook(Book book, @PathParam("userId") Long userId) {
         OperationResult result = repo.insertSharedBook(book, userId, conn);
 
@@ -137,13 +134,3 @@ public class BookResource {
     }
 
 }
-//
-// BookRepository br = new BookRepository();
-//
-//        ArrayList<Book> books = br.getAllBooks(conn);
-//
-//        Response response = Response.status(Response.Status.OK)
-//                .entity(books)
-//                .header("Access-Control-Allow-Origin", "*").build();
-//
-//        return response;

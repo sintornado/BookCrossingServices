@@ -36,15 +36,16 @@ public class UserResource {
      * Method handling HTTP GET requests. The returned object will be sent to
      * the client as "text/plain" media type.
      *
+     * @param email
      * @param id
      * @return String that will be returned as a text/plain response.
      */
     @GET
-    @Path("/{id}")
+    @Path("/{email}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getUser(@PathParam("id") long id) {
+    public Response getUser(@PathParam("email") String email) {
 
-        User user = userRepo.getUserById(id, dbConn);
+        User user = userRepo.getUserByEmail(email, dbConn);
 
         Response response = Response.status(Response.Status.OK)
                 .entity(user)
@@ -54,6 +55,20 @@ public class UserResource {
 
     }
 
+//    @GET
+//    @Path("/{id}")
+//    @Produces(MediaType.APPLICATION_JSON)
+//    public Response getUser(@PathParam("id") long id) {
+//
+//        User user = userRepo.getUserById(id, dbConn);
+//
+//        Response response = Response.status(Response.Status.OK)
+//                .entity(user)
+//                .header("Access-Control-Allow-Origin", "*").build();
+//
+//        return response;
+//
+//    }
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
