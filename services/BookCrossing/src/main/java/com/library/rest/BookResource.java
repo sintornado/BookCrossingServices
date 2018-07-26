@@ -14,8 +14,10 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 
 /**
  *
@@ -75,10 +77,11 @@ public class BookResource {
     }
 
     @POST
-    @Path("/user/{userId}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response insertBook(Book book, @PathParam("userId") Long userId) {
+    public Response insertBook(Book book, @Context SecurityContext sc) {
+
+        Long userId = Long.parseLong(sc.getUserPrincipal().getName());
         OperationResult result = repo.insertSharedBook(book, userId, conn);
 
         if (result == OperationResult.SUCCESS) {
@@ -105,9 +108,9 @@ public class BookResource {
     }
 
     @GET
-    @Path("/user/{userId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getBooksByUserId(@PathParam("userId") Long userId) {
+    public Response getBooksByUserId(@Context SecurityContext sc) {
+        Long userId = Long.parseLong(sc.getUserPrincipal().getName());
 
         BookRepository br = new BookRepository();
 
