@@ -26,9 +26,14 @@ public class BookRepository {
     private final String SELECT_BOOK_BY_AUTHOR_AND_TITLE = "SELECT * FROM books WHERE author = ? AND title = ?";
     private final String INSERT_INTO_BOOK = "INSERT books (title, author, genre) VALUES (?, ?, ?)";
     private final String INSERT_INTO_SHARED_BOOK = "INSERT shared_books (user_id, book_id) VALUES (?, ?)";
+    private final String INSERT_INTO_BORROWED_BOOK = "INSERT borrowed_books (user_id, book_id) VALUES (?, ?)";
     private final String SELECT_BOOK_BY_ID = "SELECT * FROM books WHERE id = ?";
     private final String SELECT_BOOKS_BY_USERID = "SELECT b.id, sb.id, user_id, book_id, title, author,year_publish, genre"
-            + "  FROM books as b join shared_books as sb on b.id = sb.book_id WHERE sb.user_id = ?";
+            + "  FROM books as b JOIN shared_books as sb on b.id = sb.book_id WHERE sb.user_id = ?";
+
+    private final String SELECT_BORROWED_BOOKS_BY_USERID = "SELECT b.id, sb.id, sb.user_id as user_id, sb.book_id as book_id, title, author,year_publish, genre"
+            + "  FROM books as b JOIN shared_books as sbb on b.id = sbb.book_id "
+            + "  JOIN borrowed_books as sb on sb.book_id = sbb.id WHERE sb.user_id = ?";
 
     public ArrayList<Book> getBooksByTitle(String title, DbConnection conn) {
 
@@ -49,6 +54,10 @@ public class BookRepository {
     public ArrayList<SharedBook> getBooksByUserId(Long userId, DbConnection conn) {
         return getBooksByCriteria(userId, SELECT_BOOKS_BY_USERID, conn);
 
+    }
+
+    public ArrayList<SharedBook> getBorrowedBooksByUserId(Long userId, DbConnection conn) {
+        return getBooksByCriteria(userId, SELECT_BORROWED_BOOKS_BY_USERID, conn);
     }
 
     public Book getBookById(long id, DbConnection conn) {
@@ -82,7 +91,14 @@ public class BookRepository {
             books = getBooksByAuthorAndTitle(book.Author, book.Title, conn);
         }
         bookId = books.get(0).Id;
-        insertSBook(bookId, userId, conn);
+        insertBookUsingQuery(INSERT_INTO_SHARED_BOOK, bookId, userId, conn);
+        return OperationResult.SUCCESS;
+    }
+
+    public OperationResult insertBorrowedBook(Long sharedBookId, long userId, DbConnection conn) {
+
+        //TODO: check whether record exists, it should be done by DB constraint
+        insertBookUsingQuery(INSERT_INTO_BORROWED_BOOK, sharedBookId, userId, conn);
         return OperationResult.SUCCESS;
     }
 
@@ -103,9 +119,9 @@ public class BookRepository {
 
     }
 
-    private void insertSBook(long bookId, long userId, DbConnection conn) {
+    private void insertBookUsingQuery(String query, long bookId, long userId, DbConnection conn) {
         try {
-            PreparedStatement ps = conn.getPreparedStatement(INSERT_INTO_SHARED_BOOK);
+            PreparedStatement ps = conn.getPreparedStatement(query);
 
             ps.setLong(1, userId);
             ps.setLong(2, bookId);

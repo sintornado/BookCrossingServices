@@ -86,7 +86,6 @@ public class UserResource {
             return Response.status(Response.Status.fromStatusCode(500))
                     .header("Access-Control-Allow-Origin", "*")
                     .build();
-
         }
     }
 

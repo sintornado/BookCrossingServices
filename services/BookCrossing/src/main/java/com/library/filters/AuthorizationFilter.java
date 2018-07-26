@@ -91,6 +91,10 @@ public class AuthorizationFilter implements ContainerRequestFilter {
                         .build());
 
             } catch (Exception e) {
+                crc.abortWith(Response
+                        .status(Response.Status.UNAUTHORIZED)
+                        .header(HttpHeaders.WWW_AUTHENTICATE, AUTHENTICATION_SCHEME + "realm=\"" + REALM + "\"")
+                        .build());
                 log.error(e);
 
             }
