@@ -28,25 +28,20 @@ import javax.ws.rs.core.SecurityContext;
 @Path("/shared-books")
 public class SharedBookResource {
 
-    @Path("/borrowed-books")
-    public class BorrowedBookResource {
+    private final DbConnection conn = new DbConnection();
+    private final BookRepository repo = new BookRepository();
 
-        private final DbConnection conn = new DbConnection();
-        private final BookRepository repo = new BookRepository();
+    @GET
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response borrowBook(@QueryParam("bookId") Long bookId, @Context SecurityContext sc) {
 
-        @GET
-        @Consumes(MediaType.APPLICATION_JSON)
-        public Response borrowBook(@QueryParam("bookId") Long bookId, @Context SecurityContext sc) {
+        ArrayList<SharedBook> books = repo.getSharedBooksByBookId(bookId, conn);
 
-            ArrayList<SharedBook> books = repo.getSharedBooksByBookId(bookId, conn);
+        Response response = Response.status(Response.Status.OK)
+                .entity(books)
+                .header("Access-Control-Allow-Origin", "*").build();
 
-            Response response = Response.status(Response.Status.OK)
-                    .entity(books)
-                    .header("Access-Control-Allow-Origin", "*").build();
-
-            return response;
-
-        }
+        return response;
 
     }
 }
