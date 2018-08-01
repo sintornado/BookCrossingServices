@@ -38,6 +38,8 @@ public class BookRepository {
             + "  FROM books as b JOIN shared_books as sbb on b.id = sbb.book_id "
             + "  JOIN borrowed_books as sb on sb.book_id = sbb.id WHERE sb.user_id = ?";
 
+    private final String DELETE_BORROWED_BOOK_BY_ID = "DELETE FROM shared_books WHERE id = ?";
+
     public ArrayList<Book> getBooksByTitle(String title, DbConnection conn) {
 
         return getBooksByCriteria(new String[]{title}, SELECT_BOOK_BY_TITLE, conn);
@@ -101,6 +103,19 @@ public class BookRepository {
         bookId = books.get(0).Id;
         insertBookUsingQuery(INSERT_INTO_SHARED_BOOK, bookId, userId, conn);
         return OperationResult.SUCCESS;
+    }
+
+    public void deleteBorrowedBook(long bbid, DbConnection conn) {
+        try {
+            PreparedStatement ps = conn.getPreparedStatement(DELETE_BORROWED_BOOK_BY_ID);
+
+            ps.setLong(1, bbid);
+
+            ps.execute();
+
+        } catch (SQLException ex) {
+            Logger.getLogger(UserRepository.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public OperationResult insertBorrowedBook(Long sharedBookId, long userId, DbConnection conn) {

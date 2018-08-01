@@ -11,6 +11,7 @@ import com.library.dal.OperationResult;
 import com.library.dto.SharedBook;
 import java.util.ArrayList;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.OPTIONS;
 import javax.ws.rs.POST;
@@ -75,6 +76,20 @@ public class BorrowedBookResource {
 
         Response response = Response.status(Response.Status.OK)
                 .entity(books)
+                .header("Access-Control-Allow-Origin", "*").build();
+
+        return response;
+    }
+
+    @DELETE
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response deleteBorrowedBookById(long borrowedBookId) {
+
+        BookRepository br = new BookRepository();
+
+        br.deleteBorrowedBook(borrowedBookId, conn);
+
+        Response response = Response.status(Response.Status.OK)
                 .header("Access-Control-Allow-Origin", "*").build();
 
         return response;
