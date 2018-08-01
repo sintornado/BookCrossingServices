@@ -14,6 +14,8 @@ import javax.ws.rs.Priorities;
 import org.apache.logging.log4j.*;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
+import javax.ws.rs.container.ContainerResponseContext;
+import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
@@ -27,9 +29,9 @@ import javax.ws.rs.ext.Provider;
  */
 @Provider
 @Priority(Priorities.AUTHENTICATION)
-public class AuthorizationFilter implements ContainerRequestFilter {
+public class CorsFilter implements ContainerResponseFilter {
 
-    static final Logger log = LogManager.getLogger(AuthorizationFilter.class.getName());
+    static final Logger log = LogManager.getLogger(CorsFilter.class.getName());
     String signKey = "lksjhdflsdflsjdf";
     static final String AUTHENTICATION_SCHEME = "Bearer";
     static final String REALM = "Example";
@@ -38,67 +40,10 @@ public class AuthorizationFilter implements ContainerRequestFilter {
     UriInfo uriInfo;
 
     @Override
-    public void filter(ContainerRequestContext crc) throws IOException {
+    public void filter(ContainerRequestContext crc, ContainerResponseContext crc1) throws IOException {
+        crc1.getHeaders().putSingle("Access-Control-Allow-Origin", "*");
+        crc1.getHeaders().putSingle("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
-        String authHeader = crc.getHeaderString("Authorization");
-        log.debug("Got request with next auth data : " + ((authHeader != null) ? authHeader : ""));
-
-        //TODO: Make proper injection of secured and non-secured resources
-        if (!crc.getUriInfo().getAbsolutePath().getPath().contains("auth-token")) {
-            try {
-                //TODO: Add check for Bearer JWT type of authentication
-
-                //Get user and pass it in security context
-                String subject = Jwts.parser()
-                        .setSigningKey(signKey)
-                        .parseClaimsJws(authHeader.split(" ")[1])
-                        .getBody().getSubject();
-
-                crc.setSecurityContext(new SecurityContext() {
-
-                    public Principal getUserPrincipal() {
-                        return new Principal() {
-                            @Override
-                            public String getName() {
-                                return subject;
-                            }
-                        };
-                    }
-
-                    @Override
-                    public boolean isUserInRole(String string) {
-                        //TODO: replace if / when we will have userRoles
-                        return true;
-                        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-                    }
-
-                    @Override
-                    public boolean isSecure() {
-                        return uriInfo.getAbsolutePath().toString().startsWith("https");
-                    }
-
-                    @Override
-                    public String getAuthenticationScheme() {
-                        return AUTHENTICATION_SCHEME;
-                    }
-
-                });
-
-            } catch (SignatureException e) {
-                crc.abortWith(Response
-                        .status(Response.Status.UNAUTHORIZED)
-                        .header(HttpHeaders.WWW_AUTHENTICATE, AUTHENTICATION_SCHEME + "realm=\"" + REALM + "\"")
-                        .build());
-
-            } catch (Exception e) {
-                crc.abortWith(Response
-                        .status(Response.Status.UNAUTHORIZED)
-                        .header(HttpHeaders.WWW_AUTHENTICATE, AUTHENTICATION_SCHEME + "realm=\"" + REALM + "\"")
-                        .build());
-                log.error(e);
-
-            }
-        }
     }
 
 }
