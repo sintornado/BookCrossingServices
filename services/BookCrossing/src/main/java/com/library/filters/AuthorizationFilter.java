@@ -40,6 +40,10 @@ public class AuthorizationFilter implements ContainerRequestFilter {
     @Override
     public void filter(ContainerRequestContext crc) throws IOException {
 
+        if (crc.getMethod().equalsIgnoreCase("OPTIONS")) {
+            return;
+        }
+
         String authHeader = crc.getHeaderString("Authorization");
         log.debug("Got request with next auth data : " + ((authHeader != null) ? authHeader : ""));
 
