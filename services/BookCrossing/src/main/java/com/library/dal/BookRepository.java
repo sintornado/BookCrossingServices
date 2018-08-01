@@ -31,6 +31,9 @@ public class BookRepository {
     private final String SELECT_BOOKS_BY_USERID = "SELECT b.id, sb.id, user_id, book_id, title, author,year_publish, genre"
             + "  FROM books as b JOIN shared_books as sb on b.id = sb.book_id WHERE sb.user_id = ?";
 
+    private final String SELECT_SHARED_BOOKS_BY_BOOK_ID = "SELECT b.id, sb.id, user_id, book_id, title, author,year_publish, genre"
+            + "  FROM books as b JOIN shared_books as sb on b.id = sb.book_id WHERE sb.book_id = ?";
+
     private final String SELECT_BORROWED_BOOKS_BY_USERID = "SELECT b.id, sb.id, sb.user_id as user_id, sb.book_id as book_id, title, author,year_publish, genre"
             + "  FROM books as b JOIN shared_books as sbb on b.id = sbb.book_id "
             + "  JOIN borrowed_books as sb on sb.book_id = sbb.id WHERE sb.user_id = ?";
@@ -53,6 +56,11 @@ public class BookRepository {
 
     public ArrayList<SharedBook> getBooksByUserId(Long userId, DbConnection conn) {
         return getBooksByCriteria(userId, SELECT_BOOKS_BY_USERID, conn);
+
+    }
+
+    public ArrayList<SharedBook> getSharedBooksByBookId(Long bookId, DbConnection conn) {
+        return getBooksByCriteria(bookId, SELECT_SHARED_BOOKS_BY_BOOK_ID, conn);
 
     }
 
